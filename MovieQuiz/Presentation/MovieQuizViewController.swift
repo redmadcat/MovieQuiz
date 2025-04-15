@@ -1,9 +1,29 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
+    @IBOutlet weak private var questionTitleLabel: UILabel!
+    @IBOutlet weak private var questionLabel: UILabel!
+    @IBOutlet weak private var indexLabel: UILabel!
+    @IBOutlet weak private var noButton: UIButton!
+    @IBOutlet weak private var yesButton: UIButton!
+    
+    private let ysDisplayMedium20: UIFont? = {
+        UIFont(name: "YSDisplay-Medium", size: 20.0)
+    }()
+    
+    private let ysDisplayBold23: UIFont? = {
+        UIFont(name: "YSDisplay-Bold", size: 23.0)
+    }()
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        questionTitleLabel.font = ysDisplayMedium20
+        questionLabel.font = ysDisplayBold23
+        indexLabel.font = ysDisplayMedium20
+        noButton.titleLabel?.font = ysDisplayMedium20
+        yesButton.titleLabel?.font = ysDisplayMedium20
     }
 }
 
