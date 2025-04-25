@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - @IBOutlet
     @IBOutlet weak private var questionTitleLabel: UILabel!
     @IBOutlet weak private var questionLabel: UILabel!
@@ -10,17 +10,36 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet weak private var yesButton: UIButton!
     
     // MARK: - Definition
-    private let questions: [QuizQuestion] = QuizQuestion.mockQuestions
+    private let questionsAmount = 10
+    
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
+    private var questionFactory: QuestionFactoryProtocol?
+    private var currentQuestion: QuizQuestion?
                 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        configureFactory()
         configureUI()
         startOver()
     }
     
+    // MARK: - QuestionFactoryDelegate
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        currentQuestion = question
+        let model = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: model)
+        }
+    }
+            
+    // MARK: - Private functions
     private func configureUI() {
         let labelsFont = UIFont.ysMedium20
         questionTitleLabel.font = labelsFont
@@ -30,18 +49,20 @@ final class MovieQuizViewController: UIViewController {
         yesButton.titleLabel?.font = labelsFont
     }
     
+    private func configureFactory() {
+        let questionFactory = QuestionFactory()
+        questionFactory.delegate = self
+        self.questionFactory = questionFactory
+    }
+    
     private func startOver() {
         currentQuestionIndex = 0
         correctAnswers = 0
-        
-        if let firstQuestion = questions.first {
-            let model = convert(model: firstQuestion)
-            show(quiz: model)
-        }
+        questionFactory?.requestNextQuestion()
     }
     
     private func convert(model: QuizQuestion) -> QuizStep {
-        let questionNumber = "\(currentQuestionIndex + 1)/\(questions.count)"
+        let questionNumber = "\(currentQuestionIndex + 1)/\(questionsAmount)"
         
         return QuizStep(
             image: UIImage(named: model.image) ?? UIImage(),
@@ -96,9 +117,10 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func checkAnswer(answer: Bool) {
-        if let question = questions[safe: currentQuestionIndex] {
-            showAnswerResult(isCorrect: question.correctAnswer == answer)
+        guard let currentQuestion = currentQuestion else {
+            return
         }
+        showAnswerResult(isCorrect: currentQuestion.correctAnswer == answer)
     }
     
     private func showResultBorder(show: Bool) {
@@ -106,21 +128,16 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questions.count - 1 {
+        if currentQuestionIndex == questionsAmount - 1 {
             let model = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат \(correctAnswers)/\(questions.count)",
+                text: "Ваш результат \(correctAnswers)/\(questionsAmount)",
                 buttonText: "Сыграть ещё раз")
             
             show(quiz: model)
         } else {
             currentQuestionIndex += 1
-            
-            if let nextQuestion = questions[safe: currentQuestionIndex] {
-                let model = convert(model: nextQuestion)
-                
-                show(quiz: model)
-            }
+            questionFactory?.requestNextQuestion()
         }
     }
     
