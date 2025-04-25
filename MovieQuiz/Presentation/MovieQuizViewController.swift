@@ -77,19 +77,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func show(quiz result: QuizResults) {
-        let alert = UIAlertController(
+        let quizAlert = QuizAlert(
             title: result.title,
             message: result.text,
-            preferredStyle: .alert)
-        
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-            guard let self = self else { return }
-            
-            self.startOver()
-        }
-        
-        alert.addAction(action)
-        self.present(alert, animated: true, completion: nil)
+            buttonText: result.buttonText,
+            completion: self.startOver)
+                        
+        let alertPresenter = AlertPresenter()
+        alertPresenter.delegate = self
+        alertPresenter.push(quizAlert: quizAlert)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
