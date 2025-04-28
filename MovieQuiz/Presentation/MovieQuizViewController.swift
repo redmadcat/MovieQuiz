@@ -14,6 +14,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
+    private var statisticService: StatisticServiceProtocol = StatisticService()
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
                 
@@ -24,6 +25,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         configureFactory()
         configureUI()
         startOver()
+        
+#if DEBUG
+        ClearUserDefaults()
+#endif
+    }
+    
+    // MARK: - UserDefaults clear
+    private func ClearUserDefaults() {
+        let allValues = UserDefaults.standard.dictionaryRepresentation()
+        
+        allValues.keys.forEach { key in
+            UserDefaults.standard.removeObject(forKey: key)
+        }
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -125,9 +139,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
+            let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
+            statisticService.store(result: gameResult)
+            
+            let totalGamesCount = statisticService.gamesCount
+            let recordCorrect = statisticService.bestGame.correct
+            let recordTotal = statisticService.bestGame.total
+            let recordDate = statisticService.bestGame.date.dateTimeString
+            let totalAccuracy = statisticService.totalAccuracy
+            
             let model = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат \(correctAnswers)/\(questionsAmount)",
+                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)\n" +
+                      "Количество сыгранных квизов: \(totalGamesCount)\n" +
+                      "Рекорд: \(recordCorrect)/\(recordTotal) " + "(\(recordDate))\n" +
+                      "Средняя точность: \(String(format: "%.2f", totalAccuracy))%",
                 buttonText: "Сыграть ещё раз")
             
             show(quiz: model)

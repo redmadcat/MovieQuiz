@@ -8,7 +8,7 @@
 import UIKit
 
 final class AlertPresenter {
-    var delegate: UIViewController?
+    weak var delegate: UIViewController?
         
     func push(quizAlert: QuizAlert) {
         let alert = UIAlertController(
