@@ -7,17 +7,14 @@
 
 import Foundation
 
-struct GameResult: Equatable {
+struct GameResult: Comparable {
     let correct: Int
     let total: Int
     let date: Date
-            
-    func isBetterThan(_ another: GameResult) -> Bool {
-        correct > another.correct
-    }
-        
-    // MARK: - Equatable
-    static func > (lhs: GameResult, rhs: GameResult) -> Bool {
-        return lhs.correct > rhs.correct
+    
+    // MARK: - Comparable
+    static func < (lhs: GameResult, rhs: GameResult) -> Bool {
+        lhs.correct < rhs.correct
     }
 }
+
