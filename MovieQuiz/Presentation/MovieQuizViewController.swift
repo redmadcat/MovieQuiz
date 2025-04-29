@@ -14,7 +14,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private var statisticService: StatisticServiceProtocol = StatisticService()
+    private var statisticService: StatisticServiceProtocol?
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
                 
@@ -22,22 +22,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureFactory()
+        configureServices()
         configureUI()
         startOver()
-        
-#if DEBUG
-        ClearUserDefaults()
-#endif
-    }
-    
-    // MARK: - UserDefaults clear
-    private func ClearUserDefaults() {
-        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        
-        allValues.keys.forEach { key in
-            UserDefaults.standard.removeObject(forKey: key)
-        }
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -63,10 +50,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         yesButton.titleLabel?.font = labelsFont
     }
     
-    private func configureFactory() {
+    private func configureServices() {
         let questionFactory = QuestionFactory()
         questionFactory.delegate = self
         self.questionFactory = questionFactory
+
+        statisticService = StatisticService()
     }
     
     private func startOver() {
@@ -89,11 +78,25 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionLabel.text = step.question
         indexLabel.text = step.questionNumber
     }
-    
+
     private func show(quiz result: QuizResults) {
+        guard let statisticService = statisticService else { return }
+
+        let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
+        statisticService.store(result: gameResult)
+
+        let totalGamesCount = statisticService.gamesCount
+        let recordCorrect = statisticService.bestGame.correct
+        let recordTotal = statisticService.bestGame.total
+        let recordDate = statisticService.bestGame.date.dateTimeString
+        let totalAccuracy = statisticService.totalAccuracy
+
         let quizAlert = QuizAlert(
             title: result.title,
-            message: result.text,
+            message: result.text +
+                "Количество сыгранных квизов: \(totalGamesCount)\n" +
+                "Рекорд: \(recordCorrect)/\(recordTotal) " + "(\(recordDate))\n" +
+                "Средняя точность: \(String(format: "%.2f", totalAccuracy))%",
             buttonText: result.buttonText,
             completion: self.startOver)
                         
@@ -139,21 +142,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
-            statisticService.store(result: gameResult)
-            
-            let totalGamesCount = statisticService.gamesCount
-            let recordCorrect = statisticService.bestGame.correct
-            let recordTotal = statisticService.bestGame.total
-            let recordDate = statisticService.bestGame.date.dateTimeString
-            let totalAccuracy = statisticService.totalAccuracy
-            
             let model = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)\n" +
-                      "Количество сыгранных квизов: \(totalGamesCount)\n" +
-                      "Рекорд: \(recordCorrect)/\(recordTotal) " + "(\(recordDate))\n" +
-                      "Средняя точность: \(String(format: "%.2f", totalAccuracy))%",
+                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)\n",
                 buttonText: "Сыграть ещё раз")
             
             show(quiz: model)
