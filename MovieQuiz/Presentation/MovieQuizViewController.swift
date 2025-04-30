@@ -91,14 +91,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let recordDate = statisticService.bestGame.date.dateTimeString
         let totalAccuracy = statisticService.totalAccuracy
 
+        let message = """
+            \(result.text)
+            Количество сыгранных квизов: \(totalGamesCount)
+            Рекорд: \(recordCorrect)/\(recordTotal) (\(recordDate))
+            Средняя точность: \(String(format: "%.2f", totalAccuracy))%
+            """
+        
         let quizAlert = QuizAlert(
             title: result.title,
-            message: result.text +
-                "Количество сыгранных квизов: \(totalGamesCount)\n" +
-                "Рекорд: \(recordCorrect)/\(recordTotal) " + "(\(recordDate))\n" +
-                "Средняя точность: \(String(format: "%.2f", totalAccuracy))%",
+            message: message,
             buttonText: result.buttonText,
-            completion: self.startOver)
+            completion: startOver)
                         
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
@@ -144,7 +148,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if currentQuestionIndex == questionsAmount - 1 {
             let model = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)\n",
+                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)",
                 buttonText: "Сыграть ещё раз")
             
             show(quiz: model)
