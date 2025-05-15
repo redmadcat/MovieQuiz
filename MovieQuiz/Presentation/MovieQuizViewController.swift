@@ -78,9 +78,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             if (isAnimating) {
                 self.activityIndicator.isHidden = false
                 self.activityIndicator.startAnimating()
+                self.blockButton(isEnabled: false)
             } else {
                 self.activityIndicator.isHidden = true
                 self.activityIndicator.stopAnimating()
+                self.blockButton(isEnabled: true)
             }
         }
     }
