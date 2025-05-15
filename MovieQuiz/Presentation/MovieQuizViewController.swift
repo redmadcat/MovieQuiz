@@ -8,6 +8,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet weak private var previewImage: UIImageView!
     @IBOutlet weak private var noButton: UIButton!
     @IBOutlet weak private var yesButton: UIButton!
+    @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Definition
     private let questionsAmount = 10
@@ -39,7 +40,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self?.show(quiz: model)
         }
     }
-            
+    
+    func didLoadDataFromServer() {
+        showActivityIndicator(false)
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+                    
     // MARK: - Private functions
     private func configureUI() {
         let labelsFont = UIFont.ysMedium20
@@ -51,11 +61,42 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func configureServices() {
-        let questionFactory = QuestionFactory()
+        let questionFactory = QuestionFactory(moviesLoader: MoviesLoader())
         questionFactory.delegate = self
         self.questionFactory = questionFactory
 
         statisticService = StatisticService()
+        
+        self.questionFactory?.loadData()
+        showActivityIndicator(true)
+    }
+    
+    private func showActivityIndicator(_ isAnimating: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            if (isAnimating) {
+                self.activityIndicator.isHidden = false
+                self.activityIndicator.startAnimating()
+            } else {
+                self.activityIndicator.isHidden = true
+                self.activityIndicator.stopAnimating()
+            }
+        }
+    }
+    
+    private func showNetworkError(message: String) {
+        showActivityIndicator(false)
+        
+        let quizAlert = QuizAlert(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз",
+            completion: startOver)
+                        
+        let alertPresenter = AlertPresenter()
+        alertPresenter.delegate = self
+        alertPresenter.push(quizAlert: quizAlert)
     }
     
     private func startOver() {
@@ -68,7 +109,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let questionNumber = "\(currentQuestionIndex + 1)/\(questionsAmount)"
         
         return QuizStep(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: questionNumber)
     }
