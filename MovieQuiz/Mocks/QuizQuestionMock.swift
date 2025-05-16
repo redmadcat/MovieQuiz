@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Temporary exclude according to the recommendations from the lesson
+/*
 extension QuizQuestion {
     static let mockQuestions: [QuizQuestion] = [
         QuizQuestion(
@@ -51,3 +53,4 @@ extension QuizQuestion {
             correctAnswer: false)
     ]
 }
+*/

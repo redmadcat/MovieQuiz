@@ -8,6 +8,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet weak private var previewImage: UIImageView!
     @IBOutlet weak private var noButton: UIButton!
     @IBOutlet weak private var yesButton: UIButton!
+    @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Definition
     private let questionsAmount = 10
@@ -29,17 +30,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
+        guard let question else { return }
         currentQuestion = question
         let model = convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: model)
-        }
+        show(quiz: model)
     }
-            
+    
+    func didLoadDataFromServer() {
+        showActivityIndicator(false)
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+                    
     // MARK: - Private functions
     private func configureUI() {
         let labelsFont = UIFont.ysMedium20
@@ -51,11 +56,35 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func configureServices() {
-        let questionFactory = QuestionFactory()
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
-
+        showActivityIndicator(true)
+        
         statisticService = StatisticService()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+    }
+    
+    private func showActivityIndicator(_ isAnimating: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            if (isAnimating) {
+                self.activityIndicator.isHidden = false
+                self.activityIndicator.startAnimating()
+                self.blockButton(isEnabled: false)
+            } else {
+                self.activityIndicator.isHidden = true
+                self.activityIndicator.stopAnimating()
+                self.blockButton(isEnabled: true)
+            }
+        }
+    }
+    
+    private func showNetworkError(message: String) {
+        showActivityIndicator(false)
+        showAlert(title: "Ошибка",
+                  message: message,
+                  buttonText: "Попробовать еще раз",
+                  completion: configureServices)
     }
     
     private func startOver() {
@@ -68,7 +97,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let questionNumber = "\(currentQuestionIndex + 1)/\(questionsAmount)"
         
         return QuizStep(
-            image: UIImage(named: model.image) ?? UIImage(),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: questionNumber)
     }
@@ -80,7 +109,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func show(quiz result: QuizResults) {
-        guard let statisticService = statisticService else { return }
+        guard let statisticService else { return }
 
         let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
         statisticService.store(result: gameResult)
@@ -98,11 +127,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             Средняя точность: \(String(format: "%.2f", totalAccuracy))%
             """
         
+        showAlert(title: result.title,
+                  message: message,
+                  buttonText: result.buttonText,
+                  completion: startOver)
+    }
+    
+    private func showAlert(title: String, message: String, buttonText: String, completion: @escaping () -> Void) {
         let quizAlert = QuizAlert(
-            title: result.title,
+            title: title,
             message: message,
-            buttonText: result.buttonText,
-            completion: startOver)
+            buttonText: buttonText,
+            completion: completion)
                         
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
@@ -120,7 +156,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         blockButton(isEnabled: false)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             self.showResultBorder(show: false)
             self.blockButton(isEnabled: true)
@@ -134,9 +170,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func checkAnswer(answer: Bool) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         showAnswerResult(isCorrect: currentQuestion.correctAnswer == answer)
     }
     
