@@ -8,6 +8,7 @@
 import Foundation
 
 final class QuestionFactory: QuestionFactoryProtocol {
+    // MARK: - Definition
     private let moviesLoader: MoviesLoading
     private var movies: [MostPopularMovie] = []
     private weak var delegate: QuestionFactoryDelegate?
@@ -40,15 +41,15 @@ final class QuestionFactory: QuestionFactoryProtocol {
             }
             
             let rating = Float(movie.rating) ?? 0
-            let text = "Рейтинг этого фильма больше чем 7?"
-            let correctAnswer = rating > 7
-            
+            let value = (7...9).randomElement() ?? 0
+            let text = "Рейтинг этого фильма больше чем \(value)?"
+            let correctAnswer = rating > Float(value)
+                                    
             let question = QuizQuestion(image: imageData,
                                          text: text,
                                          correctAnswer: correctAnswer)
             
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
+            DispatchQueue.main.async {
                 self.delegate?.didReceiveNextQuestion(question: question)
             }
         }
@@ -63,7 +64,9 @@ final class QuestionFactory: QuestionFactoryProtocol {
                     self.movies = mostPopularMovies.items
                     self.delegate?.didLoadDataFromServer()
                 case.failure(let error):
-                    self.delegate?.didFailToLoadData(with: error)
+                    DispatchQueue.main.async {
+                        self.delegate?.didFailToLoadData(with: error)
+                    }
                 }
             }
         }
