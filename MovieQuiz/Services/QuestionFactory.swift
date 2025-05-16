@@ -10,19 +10,22 @@ import Foundation
 final class QuestionFactory: QuestionFactoryProtocol {
     private let moviesLoader: MoviesLoading
     private var movies: [MostPopularMovie] = []
-    weak var delegate: QuestionFactoryDelegate?
-    //    private let questions: [QuizQuestion] = QuizQuestion.mockQuestions
+    private weak var delegate: QuestionFactoryDelegate?
     
-//    , delegate: QuestionFactoryDelegate?
-    init(moviesLoader: MoviesLoading) {
+    /// Temporary exclude according to the recommendations from the lesson
+    /*
+    private let questions: [QuizQuestion] = QuizQuestion.mockQuestions
+    */
+    
+    init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
-//        self.delegate = delegate
+        self.delegate = delegate
     }
     
     // MARK: - QuestionFactoryProtocol
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             let index = (0..<self.movies.count).randomElement() ?? 0
             
@@ -45,7 +48,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
                                          correctAnswer: correctAnswer)
             
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.didReceiveNextQuestion(question: question)
             }
         }
@@ -54,7 +57,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
     func loadData() {
         moviesLoader.loadMovies { [weak self] result in
             DispatchQueue.global().async {
-                guard let self = self else { return }
+                guard let self else { return }
                 switch result {
                 case .success(let mostPopularMovies):
                     self.movies = mostPopularMovies.items
