@@ -7,7 +7,9 @@
 
 import Foundation
 
-/*extension QuizQuestion {
+/// Temporary exclude according to the recommendations from the lesson
+/*
+extension QuizQuestion {
     static let mockQuestions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
@@ -50,4 +52,5 @@ import Foundation
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: false)
     ]
-}*/
+}
+*/
