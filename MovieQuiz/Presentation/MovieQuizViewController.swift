@@ -61,14 +61,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func configureServices() {
-        let questionFactory = QuestionFactory(moviesLoader: MoviesLoader())
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
-
-        statisticService = StatisticService()
-        
-        self.questionFactory?.loadData()
         showActivityIndicator(true)
+        
+        statisticService = StatisticService()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
     }
     
     private func showActivityIndicator(_ isAnimating: Bool) {
@@ -94,7 +91,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             title: "Ошибка",
             message: message,
             buttonText: "Попробовать еще раз",
-            completion: startOver)
+            completion: configureServices)
                         
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
@@ -123,7 +120,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func show(quiz result: QuizResults) {
-        guard let statisticService = statisticService else { return }
+        guard let statisticService else { return }
 
         let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
         statisticService.store(result: gameResult)
@@ -163,7 +160,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         blockButton(isEnabled: false)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             self.showResultBorder(show: false)
             self.blockButton(isEnabled: true)
@@ -177,9 +174,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func checkAnswer(answer: Bool) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         showAnswerResult(isCorrect: currentQuestion.correctAnswer == answer)
     }
     
