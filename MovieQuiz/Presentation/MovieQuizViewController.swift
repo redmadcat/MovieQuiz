@@ -30,15 +30,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
+        guard let question else { return }
         currentQuestion = question
         let model = convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: model)
-        }
+        show(quiz: model)
     }
     
     func didLoadDataFromServer() {
@@ -86,16 +81,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNetworkError(message: String) {
         showActivityIndicator(false)
-        
-        let quizAlert = QuizAlert(
-            title: "Ошибка",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: configureServices)
-                        
-        let alertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        alertPresenter.push(quizAlert: quizAlert)
+        showAlert(title: "Ошибка",
+                  message: message,
+                  buttonText: "Попробовать еще раз",
+                  completion: configureServices)
     }
     
     private func startOver() {
@@ -138,11 +127,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             Средняя точность: \(String(format: "%.2f", totalAccuracy))%
             """
         
+        showAlert(title: result.title,
+                  message: message,
+                  buttonText: result.buttonText,
+                  completion: startOver)
+    }
+    
+    private func showAlert(title: String, message: String, buttonText: String, completion: @escaping () -> Void) {
         let quizAlert = QuizAlert(
-            title: result.title,
+            title: title,
             message: message,
-            buttonText: result.buttonText,
-            completion: startOver)
+            buttonText: buttonText,
+            completion: completion)
                         
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
