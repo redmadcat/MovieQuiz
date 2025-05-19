@@ -30,6 +30,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
+        showActivityIndicator(false)
         guard let question else { return }
         currentQuestion = question
         let model = convert(model: question)
@@ -37,7 +38,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didLoadDataFromServer() {
-        showActivityIndicator(false)
         questionFactory?.requestNextQuestion()
     }
     
@@ -153,13 +153,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         previewImage.layer.masksToBounds = true
         previewImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         showResultBorder(show: true)
-        blockButton(isEnabled: false)
-        
+        showActivityIndicator(true)
+                
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self else { return }
             
             self.showResultBorder(show: false)
-            self.blockButton(isEnabled: true)
             self.showNextQuestionOrResults()
         }
     }
