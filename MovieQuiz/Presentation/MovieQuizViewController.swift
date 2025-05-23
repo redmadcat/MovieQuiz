@@ -11,10 +11,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Definition
-//    private let questionsAmount = 10
-    
     private let presenter = MovieQuizPresenter()
-//    private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var statisticService: StatisticServiceProtocol?
     private var questionFactory: QuestionFactoryProtocol?
@@ -23,7 +20,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         configureServices()
         configureUI()
         startOver()
@@ -59,6 +56,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func configureServices() {
         showActivityIndicator(true)
         
+        presenter.viewController = self
         statisticService = StatisticService()
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
@@ -137,7 +135,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         alertPresenter.push(quizAlert: quizAlert)
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1;
         }
@@ -159,12 +157,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
     }
-    
-    private func checkAnswer(answer: Bool) {
-        guard let currentQuestion else { return }
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer == answer)
-    }
-    
+        
     private func showResultBorder(show: Bool) {
         previewImage.layer.borderWidth = show ? 8 : 0
     }
@@ -185,10 +178,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - @IBAction
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        checkAnswer(answer: false)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        checkAnswer(answer: true)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
 }

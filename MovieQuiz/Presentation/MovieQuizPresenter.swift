@@ -10,7 +10,10 @@ import UIKit
 
 final class MovieQuizPresenter {
     let questionsAmount: Int = 10
+    var currentQuestion: QuizQuestion?
     private var currentQuestionIndex: Int = 0
+        
+    weak var viewController: MovieQuizViewController?
     
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
@@ -31,5 +34,18 @@ final class MovieQuizPresenter {
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: questionNumber)
+    }
+    
+    private func checkAnswer(answer: Bool) {
+        guard let currentQuestion else { return }
+        viewController?.showAnswerResult(isCorrect: currentQuestion.correctAnswer == answer)
+    }
+    
+    func yesButtonClicked() {
+        checkAnswer(answer: true)
+    }
+    
+    func noButtonClicked() {
+        checkAnswer(answer: false)
     }
 }
