@@ -16,6 +16,9 @@ final class AlertPresenter {
             message: quizAlert.message,
             preferredStyle: .alert)
         
+        /// For Unit Tests purpose
+        alert.view.accessibilityIdentifier = "Alert"
+
         let action = UIAlertAction(title: quizAlert.buttonText, style: .default) { _ in
             quizAlert.completion()
         }
