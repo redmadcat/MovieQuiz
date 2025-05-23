@@ -1,5 +1,5 @@
 //
-//  QuizQuestionMock.swift
+//  ResponseMock.swift
 //  MovieQuizTests
 //
 //  Created by Roman Yaschenkov on 23.05.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct QuizQuestionMock {
+struct ResponseMock {
     static var expectedResponse: Data {
         """
         {

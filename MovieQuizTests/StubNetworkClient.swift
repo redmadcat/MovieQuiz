@@ -6,3 +6,20 @@
 //
 
 import Foundation
+@testable import MovieQuiz
+
+struct StubNetworkClient: NetworkRouting {
+    enum TestError: Error {
+        case test
+    }
+
+    let emulateError: Bool
+
+    func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
+        if emulateError {
+            handler(.failure(TestError.test))
+        } else {
+            handler(.success(ResponseMock.expectedResponse))
+        }
+    }
+}
