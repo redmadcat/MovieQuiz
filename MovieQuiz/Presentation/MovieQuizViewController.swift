@@ -11,9 +11,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Definition
-    private let questionsAmount = 10
+//    private let questionsAmount = 10
     
-    private var currentQuestionIndex = 0
+    private let presenter = MovieQuizPresenter()
+//    private var currentQuestionIndex = 0
     private var correctAnswers = 0
     private var statisticService: StatisticServiceProtocol?
     private var questionFactory: QuestionFactoryProtocol?
@@ -33,7 +34,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         showActivityIndicator(false)
         guard let question else { return }
         currentQuestion = question
-        let model = convert(model: question)
+        let model = presenter.convert(model: question)
         show(quiz: model)
     }
     
@@ -88,20 +89,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func startOver() {
-        currentQuestionIndex = 0
+        presenter.resetQuestionIndex()
         correctAnswers = 0
         questionFactory?.requestNextQuestion()
     }
-    
-    private func convert(model: QuizQuestion) -> QuizStep {
-        let questionNumber = "\(currentQuestionIndex + 1)/\(questionsAmount)"
         
-        return QuizStep(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: questionNumber)
-    }
-    
     private func show(quiz step: QuizStep) {
         previewImage.image = step.image
         questionLabel.text = step.question
@@ -111,7 +103,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func show(quiz result: QuizResults) {
         guard let statisticService else { return }
 
-        let gameResult = GameResult(correct: correctAnswers, total: questionsAmount, date: Date())
+        let gameResult = GameResult(correct: correctAnswers, total: presenter.questionsAmount, date: Date())
         statisticService.store(result: gameResult)
 
         let totalGamesCount = statisticService.gamesCount
@@ -178,15 +170,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             let model = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)",
+                text: "Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)",
                 buttonText: "Сыграть ещё раз")
             
             show(quiz: model)
         } else {
-            currentQuestionIndex += 1
+            presenter.resetQuestionIndex()
             questionFactory?.requestNextQuestion()
         }
     }
