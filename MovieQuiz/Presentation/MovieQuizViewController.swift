@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     // MARK: - @IBOutlet
     @IBOutlet weak private var questionTitleLabel: UILabel!
     @IBOutlet weak private var questionLabel: UILabel!
@@ -20,7 +20,53 @@ final class MovieQuizViewController: UIViewController {
         configureServices()
         configureUI()
     }
-                        
+
+    // MARK: - MovieQuizViewControllerProtocol
+    func show(quiz step: QuizStep) {
+        previewImage.image = step.image
+        questionLabel.text = step.question
+        indexLabel.text = step.questionNumber
+    }
+
+    func show(quiz result: QuizResults) {
+        let message = presenter.makeResultsMessage()
+        
+        showAlert(title: result.title,
+                  message: message,
+                  buttonText: result.buttonText,
+                  completion: presenter.restartGame)
+    }
+    
+    func showResultBorder(show: Bool, isCorrectAnswer: Bool = false) {
+        previewImage.layer.masksToBounds = true
+        previewImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        previewImage.layer.borderWidth = show ? 8 : 0
+    }
+    
+    func showActivityIndicator(_ isAnimating: Bool) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            if (isAnimating) {
+                self.activityIndicator.isHidden = false
+                self.activityIndicator.startAnimating()
+                self.blockButton(isEnabled: false)
+            } else {
+                self.activityIndicator.isHidden = true
+                self.activityIndicator.stopAnimating()
+                self.blockButton(isEnabled: true)
+            }
+        }
+    }
+    
+    func showNetworkError(message: String) {
+        showActivityIndicator(false)
+        showAlert(title: "Ошибка",
+                  message: message,
+                  buttonText: "Попробовать еще раз",
+                  completion: configureServices)
+    }
+    
     // MARK: - Private functions
     private func configureUI() {
         let labelsFont = UIFont.ysMedium20
@@ -54,53 +100,7 @@ final class MovieQuizViewController: UIViewController {
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
     }
-        
-    // MARK: - Internal functions
-    func showActivityIndicator(_ isAnimating: Bool) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            
-            if (isAnimating) {
-                self.activityIndicator.isHidden = false
-                self.activityIndicator.startAnimating()
-                self.blockButton(isEnabled: false)
-            } else {
-                self.activityIndicator.isHidden = true
-                self.activityIndicator.stopAnimating()
-                self.blockButton(isEnabled: true)
-            }
-        }
-    }
-    
-    func showNetworkError(message: String) {
-        showActivityIndicator(false)
-        showAlert(title: "Ошибка",
-                  message: message,
-                  buttonText: "Попробовать еще раз",
-                  completion: configureServices) // presenter.restartGame()
-    }
-        
-    func show(quiz step: QuizStep) {
-        previewImage.image = step.image
-        questionLabel.text = step.question
-        indexLabel.text = step.questionNumber
-    }
 
-    func show(quiz result: QuizResults) {
-        let message = presenter.makeResultsMessage()
-        
-        showAlert(title: result.title,
-                  message: message,
-                  buttonText: result.buttonText,
-                  completion: presenter.restartGame)
-    }
-    
-    func showResultBorder(show: Bool, isCorrectAnswer: Bool = false) {
-        previewImage.layer.masksToBounds = true
-        previewImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        previewImage.layer.borderWidth = show ? 8 : 0
-    }
-        
     // MARK: - @IBAction
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
