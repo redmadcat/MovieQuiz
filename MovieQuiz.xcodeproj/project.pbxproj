@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9453C4202DECC11C00154905 /* MovieQuizPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9453C41F2DECC11C00154905 /* MovieQuizPresenterTests.swift */; };
 		9475427F2DDF04FB004F0DA0 /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9475427E2DDF04ED004F0DA0 /* ArrayTests.swift */; };
 		947542822DDF0B6F004F0DA0 /* MoviesLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947542812DDF0B6F004F0DA0 /* MoviesLoaderTests.swift */; };
 		947542842DDF0CD2004F0DA0 /* StubNetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947542832DDF0CD2004F0DA0 /* StubNetworkClient.swift */; };
@@ -15,6 +16,8 @@
 		9475429C2DE0965A004F0DA0 /* MovieQuizPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9475429B2DE0965A004F0DA0 /* MovieQuizPresenter.swift */; };
 		947853D12DA7954D00E3A5A8 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 947853CF2DA7954D00E3A5A8 /* YS Display-Medium.ttf */; };
 		947853D22DA7954D00E3A5A8 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 947853CE2DA7954D00E3A5A8 /* YS Display-Bold.ttf */; };
+		947DDBA92DEC9324007DCF8A /* MovieQuizViewControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947DDBA82DEC9317007DCF8A /* MovieQuizViewControllerProtocol.swift */; };
+		947DDBAD2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947DDBAC2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift */; };
 		949CC9DE2DB0D9B500F4DEA1 /* QuizQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949CC9DD2DB0D9B500F4DEA1 /* QuizQuestion.swift */; };
 		949CC9E02DB0DA2200F4DEA1 /* QuizStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949CC9DF2DB0DA2200F4DEA1 /* QuizStep.swift */; };
 		949CC9E22DB0DA9200F4DEA1 /* QuizResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949CC9E12DB0DA9200F4DEA1 /* QuizResults.swift */; };
@@ -59,6 +62,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9453C41F2DECC11C00154905 /* MovieQuizPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizPresenterTests.swift; sourceTree = "<group>"; };
 		947542722DDEF64D004F0DA0 /* MovieQuizTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MovieQuizTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9475427E2DDF04ED004F0DA0 /* ArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
 		947542812DDF0B6F004F0DA0 /* MoviesLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoaderTests.swift; sourceTree = "<group>"; };
@@ -69,6 +73,8 @@
 		9475429B2DE0965A004F0DA0 /* MovieQuizPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizPresenter.swift; sourceTree = "<group>"; };
 		947853CE2DA7954D00E3A5A8 /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
 		947853CF2DA7954D00E3A5A8 /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
+		947DDBA82DEC9317007DCF8A /* MovieQuizViewControllerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizViewControllerProtocol.swift; sourceTree = "<group>"; };
+		947DDBAC2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieQuizViewControllerMock.swift; sourceTree = "<group>"; };
 		949CC9DD2DB0D9B500F4DEA1 /* QuizQuestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizQuestion.swift; sourceTree = "<group>"; };
 		949CC9DF2DB0DA2200F4DEA1 /* QuizStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizStep.swift; sourceTree = "<group>"; };
 		949CC9E12DB0DA9200F4DEA1 /* QuizResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizResults.swift; sourceTree = "<group>"; };
@@ -152,6 +158,7 @@
 		8F4738322848DE2A005DF65E /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
+				947DDBA82DEC9317007DCF8A /* MovieQuizViewControllerProtocol.swift */,
 				AD1ABAB52831907B00B3E448 /* MovieQuizViewController.swift */,
 				AD1ABAB72831907B00B3E448 /* Main.storyboard */,
 				949E313F2DBB6BC200E3543A /* AlertPresenter.swift */,
@@ -178,6 +185,8 @@
 				947542812DDF0B6F004F0DA0 /* MoviesLoaderTests.swift */,
 				947542832DDF0CD2004F0DA0 /* StubNetworkClient.swift */,
 				947542992DE078EC004F0DA0 /* ResponseMock.swift */,
+				947DDBAC2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift */,
+				9453C41F2DECC11C00154905 /* MovieQuizPresenterTests.swift */,
 			);
 			path = MovieQuizTests;
 			sourceTree = "<group>";
@@ -391,8 +400,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9475429A2DE078EC004F0DA0 /* ResponseMock.swift in Sources */,
+				947DDBAD2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift in Sources */,
 				947542842DDF0CD2004F0DA0 /* StubNetworkClient.swift in Sources */,
 				9475427F2DDF04FB004F0DA0 /* ArrayTests.swift in Sources */,
+				9453C4202DECC11C00154905 /* MovieQuizPresenterTests.swift in Sources */,
 				947542822DDF0B6F004F0DA0 /* MoviesLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -417,6 +428,7 @@
 				AD7AFA552836189F00399704 /* Array+Extensions.swift in Sources */,
 				949E31402DBB6BC200E3543A /* AlertPresenter.swift in Sources */,
 				949E313A2DBAB5C900E3543A /* QuestionFactory.swift in Sources */,
+				947DDBA92DEC9324007DCF8A /* MovieQuizViewControllerProtocol.swift in Sources */,
 				949E316A2DBBAF5200E3543A /* GameResult.swift in Sources */,
 				AD1ABAB62831907B00B3E448 /* MovieQuizViewController.swift in Sources */,
 				949CC9E02DB0DA2200F4DEA1 /* QuizStep.swift in Sources */,

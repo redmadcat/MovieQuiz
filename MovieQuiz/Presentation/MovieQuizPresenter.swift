@@ -8,17 +8,18 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter:  QuestionFactoryDelegate {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
+    // MARK: - Definition
     private let questionsAmount: Int = 10
     private var correctAnswers: Int = 0
-    private var currentQuestion: QuizQuestion?
     private var currentQuestionIndex: Int = 0
     
     private let statisticService: StatisticServiceProtocol!
+    private var currentQuestion: QuizQuestion?
     private var questionFactory: QuestionFactoryProtocol?
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
         
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
         
         statisticService = StatisticService()
@@ -44,6 +45,7 @@ final class MovieQuizPresenter:  QuestionFactoryDelegate {
         viewController?.showNetworkError(message: error.localizedDescription)
     }
     
+    // MARK: - Internal functions
     func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
@@ -85,6 +87,15 @@ final class MovieQuizPresenter:  QuestionFactoryDelegate {
             questionNumber: questionNumber)
     }
     
+    func yesButtonClicked() {
+        checkAnswer(answer: true)
+    }
+    
+    func noButtonClicked() {
+        checkAnswer(answer: false)
+    }
+    
+    // MARK: - Private functions
     private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect)
 
@@ -95,7 +106,7 @@ final class MovieQuizPresenter:  QuestionFactoryDelegate {
             guard let self else { return }
 
             self.proceedToNextQuestionOrResults()
-            viewController?.showResultBorder(show: false)
+            viewController?.showResultBorder(show: false, isCorrectAnswer: isCorrect)
         }
     }
     
@@ -122,13 +133,5 @@ final class MovieQuizPresenter:  QuestionFactoryDelegate {
             self.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
-    }
-        
-    func yesButtonClicked() {
-        checkAnswer(answer: true)
-    }
-    
-    func noButtonClicked() {
-        checkAnswer(answer: false)
     }
 }
