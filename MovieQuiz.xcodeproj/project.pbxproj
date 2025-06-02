@@ -178,14 +178,22 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		9475427C2DDEF68F004F0DA0 /* MovieQuizTests */ = {
+		9453C4212DED96C200154905 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				9475427E2DDF04ED004F0DA0 /* ArrayTests.swift */,
-				947542812DDF0B6F004F0DA0 /* MoviesLoaderTests.swift */,
 				947542832DDF0CD2004F0DA0 /* StubNetworkClient.swift */,
 				947542992DE078EC004F0DA0 /* ResponseMock.swift */,
 				947DDBAC2DEC94DA007DCF8A /* MovieQuizViewControllerMock.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		9475427C2DDEF68F004F0DA0 /* MovieQuizTests */ = {
+			isa = PBXGroup;
+			children = (
+				9453C4212DED96C200154905 /* Mocks */,
+				9475427E2DDF04ED004F0DA0 /* ArrayTests.swift */,
+				947542812DDF0B6F004F0DA0 /* MoviesLoaderTests.swift */,
 				9453C41F2DECC11C00154905 /* MovieQuizPresenterTests.swift */,
 			);
 			path = MovieQuizTests;

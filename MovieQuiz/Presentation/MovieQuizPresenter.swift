@@ -112,7 +112,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private func didAnswer(isCorrectAnswer: Bool) {
         if isCorrectAnswer {
-            correctAnswers += 1;
+            correctAnswers += 1
         }
     }
     
